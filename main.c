@@ -22,12 +22,14 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <wchar.h>
 
 #include <hidapi.h>
+#include <ctype.h>
 
-static const unsigned short VENDOR    = 0x054c;
+static const unsigned short VENDOR    = 0x045e;
 static const unsigned short PRODUCT[] = {
-    0x0268, /* sixaxis */
+    0x028e, /* sixaxis */
     0x042f  /* move motion */
 };
 /* 0xf5   == (0x03f5 & ~(3 << 8))
@@ -127,12 +129,18 @@ int main(int argc, char **argv)
     }
 
     for (size_t i = 0; i < sizeof(PRODUCT) / sizeof(*PRODUCT); i++) {
+        wchar_t buffer[50];
+        swprintf(buffer, 50, L"Trying: v: %#x, p: %#x\n", VENDOR, PRODUCT[i]);
+        wprintf(buffer);
         dev = hid_open(VENDOR, PRODUCT[i], NULL);
+        wprintf(hid_error(NULL));
+        wprintf(L"\n");
         if (dev != NULL) {
             break;
         }
     }
     if (dev == NULL) {
+
         fprintf(stderr, "Could not find SixAxis controller\n");
         return 0;
     }
